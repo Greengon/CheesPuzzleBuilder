@@ -77,8 +77,8 @@ def updateChessPieces():
     ypos = 0
     number = 0
     new_pieces = []
-    for _ in range(8):
-        for _ in range(8):
+    for x in range(8):
+        for y in range(8):
             if not chessBoard.gameTiles[number].pieceOnTile.to_string() == "-":
                 img = pygame.image.load("./ChessArt/"
                                         + chessBoard.gameTiles[number].pieceOnTile.alliance[0].lower()

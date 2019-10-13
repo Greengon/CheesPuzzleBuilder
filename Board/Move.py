@@ -18,12 +18,11 @@ class Move:
         newBoard = ChessBoard()
         gameTiles = {}
 
-        for tile in range(63):
+        for tile in range(64):
             if not tile == self.movedPiece.position and not tile == self.destination:
                 gameTiles[tile] = self.board.gameTiles[tile]
             else:
                 gameTiles[tile] = Tile(NoPiece(), tile)
-
 
         update_piece = copy.copy(self.movedPiece)
         update_piece.position = self.destination

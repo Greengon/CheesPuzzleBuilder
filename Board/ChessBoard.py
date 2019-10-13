@@ -72,14 +72,14 @@ class ChessBoard:
         self.gameTiles[53] = Tile(Pawn("White", 53), 53)
         self.gameTiles[54] = Tile(Pawn("White", 54), 54)
         self.gameTiles[55] = Tile(Pawn("White", 55), 55)
-        self.gameTiles[56] = Tile(Rook("White", 57), 57)
-        self.gameTiles[57] = Tile(Knight("White", 58), 58)
-        self.gameTiles[58] = Tile(Bishop("White", 59), 59)
-        self.gameTiles[59] = Tile(Queen("White", 60), 60)
-        self.gameTiles[60] = Tile(King("White", 61), 61)
-        self.gameTiles[61] = Tile(Bishop("White", 62), 62)
-        self.gameTiles[62] = Tile(Knight("White", 63), 63)
-        self.gameTiles[63] = Tile(Rook("White", 64), 64)
+        self.gameTiles[56] = Tile(Rook("White", 56), 56)
+        self.gameTiles[57] = Tile(Knight("White", 57), 57)
+        self.gameTiles[58] = Tile(Bishop("White", 58), 58)
+        self.gameTiles[59] = Tile(Queen("White", 59), 59)
+        self.gameTiles[60] = Tile(King("White", 60), 60)
+        self.gameTiles[61] = Tile(Bishop("White", 61), 61)
+        self.gameTiles[62] = Tile(Knight("White", 62), 62)
+        self.gameTiles[63] = Tile(Rook("White", 63), 63)
 
     def print_board(self):
         count = 0
