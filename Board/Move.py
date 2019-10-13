@@ -1,6 +1,7 @@
 import copy
 from Board.ChessBoard import ChessBoard
 from Board.Tile import Tile
+from Pieces.NoPiece import NoPiece
 
 
 class Move:
@@ -17,12 +18,16 @@ class Move:
         newBoard = ChessBoard()
         gameTiles = {}
 
-        for tile in range(64):
-            gameTiles[tile] = self.board.gameTiles[tile]
+        for tile in range(63):
+            if not tile == self.movedPiece.position and not tile == self.destination:
+                gameTiles[tile] = self.board.gameTiles[tile]
+            else:
+                gameTiles[tile] = Tile(NoPiece(), tile)
+
 
         update_piece = copy.copy(self.movedPiece)
         update_piece.position = self.destination
-        gameTiles[self.destination] = Tile(self.destination, update_piece)
+        gameTiles[self.destination] = Tile(update_piece, self.destination)
         newBoard.gameTiles = gameTiles
 
         return newBoard

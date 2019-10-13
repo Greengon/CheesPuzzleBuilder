@@ -9,6 +9,7 @@ CONSTANT_PIXEL_SIZE = 75
 
 # ############## Game Functions ################
 
+
 def squares(x, y, w, h, color):
     pygame.draw.rect(gameDisplay, color, [x, y, w, h])
     allTiles.append([color, [x, y, w, h]])
@@ -52,6 +53,7 @@ def draw_chess_pieces():
         xpos = 0
         ypos += CONSTANT_PIXEL_SIZE
 
+
 def createSqParams():
     allSqRanges = []
     xMin = 0
@@ -83,7 +85,7 @@ def updateChessPieces():
                                         + chessBoard.gameTiles[number].pieceOnTile.to_string().upper()
                                         + ".png")
                 img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
-                allPieces.append([img, [xpos, ypos], chessBoard.gameTiles[number].pieceOnTile])
+                new_pieces.append([img, [xpos, ypos], chessBoard.gameTiles[number].pieceOnTile])
             xpos += CONSTANT_PIXEL_SIZE
             number += 1
         xpos = 0
@@ -112,6 +114,7 @@ quitGame = False
 allTiles = []
 allPieces = []
 selectedPiece = None
+prevx, prevy = [0, 0]
 allSqParams = createSqParams()  # This var is the position of all tile in relation to the gui in a list
 # All needed variables
 
@@ -135,9 +138,11 @@ while not quitGame:
             if selectedPiece is None:
                 mx, my = pygame.mouse.get_pos()
                 for piece in range(len(allPieces)):
-                    if allPieces[piece][1][0] < mx < allPieces[piece][1][0]+CONSTANT_PIXEL_SIZE:
+                    if allPieces[piece][1][0] < mx < allPieces[piece][1][0] + CONSTANT_PIXEL_SIZE:
                         if allPieces[piece][1][1] < my < allPieces[piece][1][1] + CONSTANT_PIXEL_SIZE:
                             selectedPiece = piece
+                            prevx = allPieces[piece][1][0]
+                            prevy = allPieces[piece][1][1]
                 print(selectedPiece)
 
         # Fallow the user mouse drag
@@ -166,10 +171,13 @@ while not quitGame:
                     chessBoard = new_board
                 new_pieces = updateChessPieces()
                 allPieces = new_pieces
+                chessBoard.print_board()
 
             # TODO: to broad except catch
-            except:
-                pass
+            except Exception as e:
+                print(e)
+            prevy = 0
+            prevx = 0
             selectedPiece = None
 
     # reset board
