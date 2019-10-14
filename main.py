@@ -180,6 +180,8 @@ while not quitGame:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 2:
                 game_menu()
+                new_pieces = updateChessPieces()
+                allPieces = new_pieces
             if selectedPiece is None:
                 mx, my = pygame.mouse.get_pos()
                 for piece in range(len(allPieces)):
