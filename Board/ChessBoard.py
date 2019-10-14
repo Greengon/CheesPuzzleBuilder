@@ -89,3 +89,50 @@ class ChessBoard:
             if count == 8:
                 print("|", end='\n')
                 count = 0
+
+    def load_board_from_file_path(self, path):
+        count = 0
+        with open(path) as board_loaded:
+            for line in board_loaded:
+                for char in line:
+                    if char != '|' and char != '\n':
+                        if char == '-':
+                            self.gameTiles[count] = Tile(NoPiece(), count)
+                            count += 1
+                        if char == 'R':
+                            self.gameTiles[count] = Tile(Rook("Black", count), count)
+                            count += 1
+                        if char == 'N':
+                            self.gameTiles[count] = Tile(Knight("Black", count), count)
+                            count += 1
+                        if char == 'B':
+                            self.gameTiles[count] = Tile(Bishop("Black", count), count)
+                            count += 1
+                        if char == 'Q':
+                            self.gameTiles[count] = Tile(Queen("Black", count), count)
+                            count += 1
+                        if char == 'K':
+                            self.gameTiles[count] = Tile(King("Black", count), count)
+                            count += 1
+                        if char == 'P':
+                            self.gameTiles[count] = Tile(Pawn("Black", count), count)
+                            count += 1
+                        if char == 'r':
+                            self.gameTiles[count] = Tile(Rook("White", count), count)
+                            count += 1
+                        if char == 'n':
+                            self.gameTiles[count] = Tile(Knight("White", count), count)
+                            count += 1
+                        if char == 'b':
+                            self.gameTiles[count] = Tile(Bishop("White", count), count)
+                            count += 1
+                        if char == 'q':
+                            self.gameTiles[count] = Tile(Queen("White", count), count)
+                            count += 1
+                        if char == 'k':
+                            self.gameTiles[count] = Tile(King("White", count), count)
+                            count += 1
+                        if char == 'p':
+                            self.gameTiles[count] = Tile(Pawn("White", count), count)
+                            count += 1
+        print("Done copying from file")

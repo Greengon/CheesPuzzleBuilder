@@ -1,4 +1,6 @@
 import pygame
+from tkinter.filedialog import askopenfilename
+from tkinter import *
 from Board.ChessBoard import ChessBoard
 from Board.Move import Move
 
@@ -92,7 +94,46 @@ def updateChessPieces():
         ypos += CONSTANT_PIXEL_SIZE
     return new_pieces
 
+
+# Menu
+def game_menu():
+    menu = True
+
+    myfont = pygame.font.SysFont("Comic Sans MS", 30)
+    menu_title = myfont.render("Welcome", True, (0, 0, 0))
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3:
+                    print("test")
+                    menu = False
+        gameDisplay.fill((255, 255, 255))
+
+        # Text
+        gameDisplay.blit(menu_title, (100, 50))
+
+        # Button
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if 150 + 100 > mouse[0] > 150 and 450+50 > mouse[1] > 450:
+            if click[0] == 1:
+                Tk().withdraw()
+                filename = askopenfilename()
+                chessBoard.load_board_from_file_path(filename)
+                menu = False
+        pygame.draw.rect(gameDisplay, (128, 128, 128), (150, 450, 100, 50))
+        button_text = myfont.render("Load", True, (0, 0, 0))
+        gameDisplay.blit(button_text, (160, 450))
+        pygame.display.update()
+
+
+# Menu
+
 # ############## Game Functions ################
+
 
 # Pygame init commands
 
@@ -120,11 +161,13 @@ allSqParams = createSqParams()  # This var is the position of all tile in relati
 
 
 
+game_menu()
 draw_chess_pieces()
 
 
 # Pygame game loop until user quit's the game
 while not quitGame:
+    click = pygame.mouse.get_pressed()
 
     # Check's if the user quited the game
     for event in pygame.event.get():
@@ -135,6 +178,9 @@ while not quitGame:
 
         # Check's if the user selected a tile
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 2:
+                game_menu()
+                draw_chess_pieces()
             if selectedPiece is None:
                 mx, my = pygame.mouse.get_pos()
                 for piece in range(len(allPieces)):
