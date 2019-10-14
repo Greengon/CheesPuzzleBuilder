@@ -180,7 +180,6 @@ while not quitGame:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 2:
                 game_menu()
-                draw_chess_pieces()
             if selectedPiece is None:
                 mx, my = pygame.mouse.get_pos()
                 for piece in range(len(allPieces)):
@@ -199,7 +198,7 @@ while not quitGame:
 
         # TODO: create drag and drop GUI
         # Check's if the user released the mouse
-        if event.type == pygame.MOUSEBUTTONUP:
+        if event.type == pygame.MOUSEBUTTONUP and selectedPiece is not None:
             try:
                 print("Mouse button up")
                 print("Selected piece: " + str(selectedPiece))
