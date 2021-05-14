@@ -137,107 +137,109 @@ def game_menu():
 
 # Pygame init commands
 
-pygame.init()
-gameDisplay = pygame.display.set_mode((CONSTANT_PIXEL_SIZE*8, CONSTANT_PIXEL_SIZE*8))
-pygame.display.set_caption("ChessPuzzleBuilder")
-clock = pygame.time.Clock()
+# ChessPuzzleBuilder main
+if __name__ == '__main__':
+    pygame.init()
+    gameDisplay = pygame.display.set_mode((CONSTANT_PIXEL_SIZE*8, CONSTANT_PIXEL_SIZE*8))
+    pygame.display.set_caption("ChessPuzzleBuilder")
+    clock = pygame.time.Clock()
 
-# Pygame init commands
+    # Pygame init commands
 
-# Board init commands
-chessBoard = ChessBoard()
-chessBoard.create_board()
-chessBoard.print_board()
-# Board init commands
+    # Board init commands
+    chessBoard = ChessBoard()
+    chessBoard.create_board()
+    chessBoard.print_board()
+    # Board init commands
 
-# All needed variables
-quitGame = False
-allTiles = []
-allPieces = []
-selectedPiece = None
-prevx, prevy = [0, 0]
-allSqParams = createSqParams()  # This var is the position of all tile in relation to the gui in a list
-# All needed variables
-
-
-
-game_menu()
-draw_chess_pieces()
+    # All needed variables
+    quitGame = False
+    allTiles = []
+    allPieces = []
+    selectedPiece = None
+    prevx, prevy = [0, 0]
+    allSqParams = createSqParams()  # This var is the position of all tile in relation to the gui in a list
+    # All needed variables
 
 
-# Pygame game loop until user quit's the game
-while not quitGame:
-    click = pygame.mouse.get_pressed()
 
-    # Check's if the user quited the game
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            quitGame = True
-            pygame.quit()
-            quit()
+    game_menu()
+    draw_chess_pieces()
 
-        # Check's if the user selected a tile
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 2:
-                game_menu()
-                new_pieces = updateChessPieces()
-                allPieces = new_pieces
-            if selectedPiece is None:
+
+    # Pygame game loop until user quit's the game
+    while not quitGame:
+        click = pygame.mouse.get_pressed()
+
+        # Check's if the user quited the game
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quitGame = True
+                pygame.quit()
+                quit()
+
+            # Check's if the user selected a tile
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 2:
+                    game_menu()
+                    new_pieces = updateChessPieces()
+                    allPieces = new_pieces
+                if selectedPiece is None:
+                    mx, my = pygame.mouse.get_pos()
+                    for piece in range(len(allPieces)):
+                        if allPieces[piece][1][0] < mx < allPieces[piece][1][0] + CONSTANT_PIXEL_SIZE:
+                            if allPieces[piece][1][1] < my < allPieces[piece][1][1] + CONSTANT_PIXEL_SIZE:
+                                selectedPiece = piece
+                                prevx = allPieces[piece][1][0]
+                                prevy = allPieces[piece][1][1]
+                    print(selectedPiece)
+
+            # Fallow the user mouse drag
+            if event.type == pygame.MOUSEMOTION and selectedPiece is not None:
                 mx, my = pygame.mouse.get_pos()
-                for piece in range(len(allPieces)):
-                    if allPieces[piece][1][0] < mx < allPieces[piece][1][0] + CONSTANT_PIXEL_SIZE:
-                        if allPieces[piece][1][1] < my < allPieces[piece][1][1] + CONSTANT_PIXEL_SIZE:
-                            selectedPiece = piece
-                            prevx = allPieces[piece][1][0]
-                            prevy = allPieces[piece][1][1]
-                print(selectedPiece)
+                allPieces[selectedPiece][1][0] = mx - CONSTANT_PIXEL_SIZE/2
+                allPieces[selectedPiece][1][1] = my - CONSTANT_PIXEL_SIZE/2
 
-        # Fallow the user mouse drag
-        if event.type == pygame.MOUSEMOTION and selectedPiece is not None:
-            mx, my = pygame.mouse.get_pos()
-            allPieces[selectedPiece][1][0] = mx - CONSTANT_PIXEL_SIZE/2
-            allPieces[selectedPiece][1][1] = my - CONSTANT_PIXEL_SIZE/2
+            # TODO: create drag and drop GUI
+            # Check's if the user released the mouse
+            if event.type == pygame.MOUSEBUTTONUP and selectedPiece is not None:
+                try:
+                    print("Mouse button up")
+                    print("Selected piece: " + str(selectedPiece))
+                    theMove = 0
+                    for mov_destination in range(64):
+                        if allSqParams[mov_destination][0] < allPieces[selectedPiece][1][0]+CONSTANT_PIXEL_SIZE/2 < allSqParams[mov_destination][1]:
+                            if allSqParams[mov_destination][2] < allPieces[selectedPiece][1][1] + CONSTANT_PIXEL_SIZE/2 < allSqParams[mov_destination][3]:
+                                theMove = mov_destination
+                    allPieces[selectedPiece][1][0] = allSqParams[theMove][0]
+                    allPieces[selectedPiece][1][1] = allSqParams[theMove][2]
 
-        # TODO: create drag and drop GUI
-        # Check's if the user released the mouse
-        if event.type == pygame.MOUSEBUTTONUP and selectedPiece is not None:
-            try:
-                print("Mouse button up")
-                print("Selected piece: " + str(selectedPiece))
-                theMove = 0
-                for mov_destination in range(64):
-                    if allSqParams[mov_destination][0] < allPieces[selectedPiece][1][0]+CONSTANT_PIXEL_SIZE/2 < allSqParams[mov_destination][1]:
-                        if allSqParams[mov_destination][2] < allPieces[selectedPiece][1][1] + CONSTANT_PIXEL_SIZE/2 < allSqParams[mov_destination][3]:
-                            theMove = mov_destination
-                allPieces[selectedPiece][1][0] = allSqParams[theMove][0]
-                allPieces[selectedPiece][1][1] = allSqParams[theMove][2]
+                    current_move = Move(chessBoard, allPieces[selectedPiece][2], theMove)
+                    new_board = current_move.create_new_board()
+                    if new_board is not False:
+                        chessBoard = new_board
+                    new_pieces = updateChessPieces()
+                    allPieces = new_pieces
+                    chessBoard.print_board()
 
-                current_move = Move(chessBoard, allPieces[selectedPiece][2], theMove)
-                new_board = current_move.create_new_board()
-                if new_board is not False:
-                    chessBoard = new_board
-                new_pieces = updateChessPieces()
-                allPieces = new_pieces
-                chessBoard.print_board()
+                # TODO: to broad except catch
+                except Exception as e:
+                    print(e)
+                prevy = 0
+                prevx = 0
+                selectedPiece = None
 
-            # TODO: to broad except catch
-            except Exception as e:
-                print(e)
-            prevy = 0
-            prevx = 0
-            selectedPiece = None
+        # reset board
+        gameDisplay.fill((255, 255, 255))
 
-    # reset board
-    gameDisplay.fill((255, 255, 255))
+        # redraw tiles
+        for info in allTiles:
+            pygame.draw.rect(gameDisplay, info[0], info[1])
 
-    # redraw tiles
-    for info in allTiles:
-        pygame.draw.rect(gameDisplay, info[0], info[1])
+        # redraw images
+        for img in allPieces:
+            gameDisplay.blit(img[0], img[1])
 
-    # redraw images
-    for img in allPieces:
-        gameDisplay.blit(img[0], img[1])
-
-    pygame.display.update()
-    clock.tick(60)
-# Pygame loop until user quit's the game
+        pygame.display.update()
+        clock.tick(60)
+    # Pygame loop until user quit's the game
