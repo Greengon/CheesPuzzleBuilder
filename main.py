@@ -1,5 +1,3 @@
-from builtins import chr
-
 import pygame
 from tkinter.filedialog import askopenfilename
 from tkinter import *
@@ -8,53 +6,60 @@ from Board.ChessBoard import ChessBoard
 
 # Constants
 CONSTANT_PIXEL_SIZE = 75
-# Constants
+BLACK = (20, 90, 19)
+WHITE = (250, 250, 200)
+
 
 # ############## Game Functions ################
+def square_printing_function(x, y, color, game_display, all_tiles):
+    """
+    Square printing function.
+    :param x: x position
+    :param y: y position
+    :param w: Width
+    :param h: High
+    :param color: Color
+    :param game_display: The current Pygame display
+    :param all_tiles: All squares of the board
+    :return: None
+    """
+    pygame.draw.rect(game_display, color, [x, y, CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE])
+    all_tiles.append([color, [x, y, CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE]])
 
 
-def squares(x, y, w, h, color, game_display, all_tiles):
-    pygame.draw.rect(game_display, color, [x, y, w, h])
-    all_tiles.append([color, [x, y, w, h]])
+def draw_chess_pieces(game_display, chess_board, all_pieces, all_tiles):
+    """
+    This function will draw the board for us.
+    :param game_display:
+    :param chess_board:
+    :param all_pieces:
+    :param all_tiles:
+    :return: None
+    """
 
-
-def draw_chess_pieces(game_display,chess_board, all_pieces, all_tiles):
-    xpos = 0
-    ypos = 0
+    # Counters variables
+    x_position = 0
+    y_position = 0
     color = 0
-    width = CONSTANT_PIXEL_SIZE
-    height = CONSTANT_PIXEL_SIZE
-    black = (20, 90, 19)
-    white = (250, 250, 200)
     number = 0
 
     for _ in range(8):
         for _ in range(8):
-            if color % 2 == 0:
-                squares(xpos, ypos, width, height, white, game_display, all_tiles)
-                if not chess_board.game_tiles[number].to_string() == '-':
-                    img = pygame.image.load("./ChessArt/"
-                                            + chess_board.game_tiles[number].alliance[0].lower()
-                                            + chess_board.game_tiles[number].to_string().upper()
-                                            + ".png")
-                    img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
-                    all_pieces.append([img, [xpos, ypos], chess_board.game_tiles[number]])
-                xpos += CONSTANT_PIXEL_SIZE
-            else:
-                squares(xpos, ypos, width, height, black, game_display, all_tiles)
-                if not chess_board.game_tiles[number].to_string() == '-':
-                    img = pygame.image.load("./ChessArt/"
-                                            + chess_board.game_tiles[number].alliance[0].lower()
-                                            + chess_board.game_tiles[number].to_string().upper()
-                                            + ".png")
-                    img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
-                    all_pieces.append([img, [xpos, ypos], chess_board.game_tiles[number]])
-                xpos += CONSTANT_PIXEL_SIZE
+            given_color = WHITE if color % 2 == 0 else BLACK
+            square_printing_function(x_position, y_position, given_color, game_display, all_tiles)
+            if not chess_board.game_tiles[number].to_string() == '-':
+                img = pygame.image.load("./ChessArt/"
+                                        + chess_board.game_tiles[number].alliance[0].lower()
+                                        + chess_board.game_tiles[number].to_string().upper()
+                                        + ".png")
+                img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
+                all_pieces.append([img, [x_position, y_position], chess_board.game_tiles[number]])
+            x_position += CONSTANT_PIXEL_SIZE
             color += 1
             number += 1
         color += 1
-        xpos = 0
-        ypos += CONSTANT_PIXEL_SIZE
+        x_position = 0
+        y_position += CONSTANT_PIXEL_SIZE
 
 
 def create_squares_parameters():
@@ -80,9 +85,9 @@ def create_squares_parameters():
     return all_squares_ranges
 
 
-def updateChessPieces(chess_board):
-    xpos = 0
-    ypos = 0
+def print_pieces_images(chess_board):
+    x_position = 0
+    y_position = 0
     number = 0
     new_pieces = []
     for x in range(8):
@@ -93,11 +98,11 @@ def updateChessPieces(chess_board):
                                         + chess_board.game_tiles[number].to_string().upper()
                                         + ".png")
                 img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
-                new_pieces.append([img, [xpos, ypos], chess_board.game_tiles[number]])
-            xpos += CONSTANT_PIXEL_SIZE
+                new_pieces.append([img, [x_position, y_position], chess_board.game_tiles[number]])
+            x_position += CONSTANT_PIXEL_SIZE
             number += 1
-        xpos = 0
-        ypos += CONSTANT_PIXEL_SIZE
+        x_position = 0
+        y_position += CONSTANT_PIXEL_SIZE
     return new_pieces
 
 
@@ -209,8 +214,7 @@ def main():
     game_menu(game_display, chess_board)
 
     # Board drawing function
-    draw_chess_pieces(game_display,chess_board,all_pieces, all_tiles)
-
+    draw_chess_pieces(game_display, chess_board, all_pieces, all_tiles)
 
     # Pygame game loop until user quit's the game
     while not quit_game:
@@ -227,7 +231,7 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 2:
                     game_menu()
-                    new_pieces = updateChessPieces(chess_board)
+                    new_pieces = print_pieces_images(chess_board)
                     all_pieces = new_pieces
                 if selected_piece is None:
                     mx, my = pygame.mouse.get_pos()
@@ -258,8 +262,7 @@ def main():
                     all_pieces[selected_piece][1][1] = all_squares_parameters[theMove][2]
 
                     chess_board.move(all_pieces[selected_piece][2], theMove)
-                    new_pieces = updateChessPieces(chess_board)
-                    all_pieces = new_pieces
+                    all_pieces = print_pieces_images(chess_board)
                     chess_board.test_print_board()  # Test function TODO: delete me in the end
 
                 # TODO: to broad except catch
