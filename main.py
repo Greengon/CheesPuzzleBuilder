@@ -4,7 +4,6 @@ import pygame
 from tkinter.filedialog import askopenfilename
 from tkinter import *
 from Board.ChessBoard import ChessBoard
-from Board.Move import Move
 
 
 # Constants
@@ -33,23 +32,23 @@ def draw_chess_pieces(game_display,chess_board, all_pieces, all_tiles):
         for _ in range(8):
             if color % 2 == 0:
                 squares(xpos, ypos, width, height, white, game_display, all_tiles)
-                if not chess_board.gameTiles[number].pieceOnTile.to_string() == '-':
+                if not chess_board.game_tiles[number].to_string() == '-':
                     img = pygame.image.load("./ChessArt/"
-                                            + chess_board.gameTiles[number].pieceOnTile.alliance[0].lower()
-                                            + chess_board.gameTiles[number].pieceOnTile.to_string().upper()
+                                            + chess_board.game_tiles[number].alliance[0].lower()
+                                            + chess_board.game_tiles[number].to_string().upper()
                                             + ".png")
                     img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
-                    all_pieces.append([img, [xpos, ypos], chess_board.gameTiles[number].pieceOnTile])
+                    all_pieces.append([img, [xpos, ypos], chess_board.game_tiles[number]])
                 xpos += CONSTANT_PIXEL_SIZE
             else:
                 squares(xpos, ypos, width, height, black, game_display, all_tiles)
-                if not chess_board.gameTiles[number].pieceOnTile.to_string() == '-':
+                if not chess_board.game_tiles[number].to_string() == '-':
                     img = pygame.image.load("./ChessArt/"
-                                            + chess_board.gameTiles[number].pieceOnTile.alliance[0].lower()
-                                            + chess_board.gameTiles[number].pieceOnTile.to_string().upper()
+                                            + chess_board.game_tiles[number].alliance[0].lower()
+                                            + chess_board.game_tiles[number].to_string().upper()
                                             + ".png")
                     img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
-                    all_pieces.append([img, [xpos, ypos], chess_board.gameTiles[number].pieceOnTile])
+                    all_pieces.append([img, [xpos, ypos], chess_board.game_tiles[number]])
                 xpos += CONSTANT_PIXEL_SIZE
             color += 1
             number += 1
@@ -83,13 +82,13 @@ def updateChessPieces(chess_board):
     new_pieces = []
     for x in range(8):
         for y in range(8):
-            if not chess_board.gameTiles[number].pieceOnTile.to_string() == "-":
+            if not chess_board.game_tiles[number].to_string() == "-":
                 img = pygame.image.load("./ChessArt/"
-                                        + chess_board.gameTiles[number].pieceOnTile.alliance[0].lower()
-                                        + chess_board.gameTiles[number].pieceOnTile.to_string().upper()
+                                        + chess_board.game_tiles[number].alliance[0].lower()
+                                        + chess_board.game_tiles[number].to_string().upper()
                                         + ".png")
                 img = pygame.transform.scale(img, (CONSTANT_PIXEL_SIZE, CONSTANT_PIXEL_SIZE))
-                new_pieces.append([img, [xpos, ypos], chess_board.gameTiles[number].pieceOnTile])
+                new_pieces.append([img, [xpos, ypos], chess_board.game_tiles[number]])
             xpos += CONSTANT_PIXEL_SIZE
             number += 1
         xpos = 0
@@ -139,7 +138,6 @@ def pygame_init_function():
     Not all pygame modules need to be initialized, but this will
     automatically initialize the ones that do and saves the trouble of
     manually initializing each module individually.
-    :return:
     """
     pygame.init()
 
@@ -159,22 +157,15 @@ def pygame_init_function():
     return game_display, clock
 
 
-def create_and_init_new_board():
-    # Board init commands
-    chess_board = ChessBoard()
-    chess_board.create_board()
-    chess_board.print_board()
-    return chess_board
-
-
 # ############## Game Functions ################
 # ChessPuzzleBuilder main
 def main():
     # init Pygame
     game_display, clock = pygame_init_function()
 
-    # Create new game board
-    chess_board = create_and_init_new_board()
+    # Create new game board object and test print it
+    chess_board = ChessBoard()
+    chess_board.test_print_board()  # Test function TODO: delete me in the end
 
     # All needed variables, TODO: Check if needed here
     quit_game = False
@@ -235,13 +226,10 @@ def main():
                     all_pieces[selected_piece][1][0] = all_squares_parameters[theMove][0]
                     all_pieces[selected_piece][1][1] = all_squares_parameters[theMove][2]
 
-                    current_move = Move(chess_board, all_pieces[selected_piece][2], theMove)
-                    new_board = current_move.create_new_board()
-                    if new_board is not False:
-                        chess_board = new_board
+                    chess_board.move(all_pieces[selected_piece][2], theMove)
                     new_pieces = updateChessPieces(chess_board)
                     all_pieces = new_pieces
-                    chess_board.print_board()
+                    chess_board.test_print_board()  # Test function TODO: delete me in the end
 
                 # TODO: to broad except catch
                 except Exception as e:
