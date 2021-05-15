@@ -59,6 +59,11 @@ class ChessBoard:
                 count = 0
 
     def load_board_from_file_path(self, path):
+        """
+        Load a chess board from .txt file on the local computer.
+        :param path: The path to the .txt file.
+        :return: None
+        """
         count = 0
         with open(path) as board_loaded:
             for line in board_loaded:

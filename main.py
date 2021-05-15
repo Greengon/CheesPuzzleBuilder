@@ -57,22 +57,27 @@ def draw_chess_pieces(game_display,chess_board, all_pieces, all_tiles):
         ypos += CONSTANT_PIXEL_SIZE
 
 
-def createSqParams():
-    allSqRanges = []
-    xMin = 0
-    xMax = CONSTANT_PIXEL_SIZE
-    yMin = 0
-    yMax = CONSTANT_PIXEL_SIZE
+def create_squares_parameters():
+    """
+    This functions returns a list in the size of the board
+    and for each item it holds the corresponded place in pixels
+    of that item on the board in the GUI showed for the user.
+    """
+    all_squares_ranges = []
+    x_min = 0
+    x_max = CONSTANT_PIXEL_SIZE
+    y_min = 0
+    y_max = CONSTANT_PIXEL_SIZE
     for _ in range(8):
         for _ in range(8):
-            allSqRanges.append([xMin, xMax, yMin, yMax])
-            xMin += CONSTANT_PIXEL_SIZE
-            xMax += CONSTANT_PIXEL_SIZE
-        xMin = 0
-        xMax = CONSTANT_PIXEL_SIZE
-        yMin += CONSTANT_PIXEL_SIZE
-        yMax += CONSTANT_PIXEL_SIZE
-    return allSqRanges
+            all_squares_ranges.append([x_min, x_max, y_min, y_max])
+            x_min += CONSTANT_PIXEL_SIZE
+            x_max += CONSTANT_PIXEL_SIZE
+        x_min = 0
+        x_max = CONSTANT_PIXEL_SIZE
+        y_min += CONSTANT_PIXEL_SIZE
+        y_max += CONSTANT_PIXEL_SIZE
+    return all_squares_ranges
 
 
 def updateChessPieces(chess_board):
@@ -96,43 +101,67 @@ def updateChessPieces(chess_board):
     return new_pieces
 
 
-# Menu
 def game_menu(game_display, chess_board):
-    menu = True
+    """
+    Show the user a menu.
+    :param game_display: Pygame.display object of our game.
+    :param chess_board: Our board as an object.
+    :return: None
+    """
 
-    myfont = pygame.font.SysFont("Comic Sans MS", 30)
-    menu_title = myfont.render("Welcome", True, (0, 0, 0))
-    while menu:
+    # Chosen font for the menu
+    my_font = pygame.font.SysFont("Comic Sans MS", 28)
+    menu_title = my_font.render("Welcome To Green's Chess Puzzle Builder", True, (0, 0, 0))
+    load_button_text = my_font.render("Load", True, (0, 0, 0))
+    new_game_button_text = my_font.render("New Game", True, (0, 0, 0))
+    menu_keep_alive = True
+    while menu_keep_alive:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # User chose to quit the game.
                 pygame.quit()
                 quit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 3:
-                    print("test")
-                    menu = False
         game_display.fill((255, 255, 255))
 
         # Text
-        game_display.blit(menu_title, (100, 50))
+        game_display.blit(menu_title, (10, 50))
 
-        # Button
+        # Buttons
+        # pygame.draw.rect(game_display, (color, color, color), (x coordinate, y coordinate, width, high))
+
+        # New Game button
+        pygame.draw.rect(game_display, (128, 128, 128), (150, 350, 150, 50))
+        game_display.blit(new_game_button_text, (160, 350))
+
+        # Load button
+        pygame.draw.rect(game_display, (128, 128, 128), (150, 450, 80, 50))
+        game_display.blit(load_button_text, (160, 450))
+
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        if 150 + 100 > mouse[0] > 150 and 450+50 > mouse[1] > 450:
+
+        # If User pressed on "New Game"
+        if 150 + 150 > mouse[0] > 150 and 350+50 > mouse[1] > 350:
+            if click[0] == 1:
+                menu_keep_alive = False
+
+        # If User pressed on "Load"
+        elif 150 + 80 > mouse[0] > 150 and 450+50 > mouse[1] > 450:
             if click[0] == 1:
                 Tk().withdraw()
                 filename = askopenfilename()
                 chess_board.load_board_from_file_path(filename)
-                menu = False
-        pygame.draw.rect(game_display, (128, 128, 128), (150, 450, 100, 50))
-        button_text = myfont.render("Load", True, (0, 0, 0))
-        game_display.blit(button_text, (160, 450))
+                menu_keep_alive = False
+
         pygame.display.update()
 
 
-# Pygame init commands
 def pygame_init_function():
+    """
+    Initialize all Pygame modules
+    :return: pygame display object and pygame.time Clock object.
+    """
+
     """
     pygame.init() initialize all imported pygame modules.
     Not all pygame modules need to be initialized, but this will
@@ -172,10 +201,14 @@ def main():
     all_tiles = []
     all_pieces = []
     selected_piece = None
-    previous_x, previous_y = [0, 0]
-    all_squares_parameters = createSqParams()  # This var is the position of all tile in relation to the gui in a list
 
+    # This var is a list that holds the position in pixels of all tiles in relation to the user GUI
+    all_squares_parameters = create_squares_parameters()
+
+    # Show the menu to the user
     game_menu(game_display, chess_board)
+
+    # Board drawing function
     draw_chess_pieces(game_display,chess_board,all_pieces, all_tiles)
 
 
@@ -202,8 +235,6 @@ def main():
                         if all_pieces[piece][1][0] < mx < all_pieces[piece][1][0] + CONSTANT_PIXEL_SIZE:
                             if all_pieces[piece][1][1] < my < all_pieces[piece][1][1] + CONSTANT_PIXEL_SIZE:
                                 selected_piece = piece
-                                previous_x = all_pieces[piece][1][0]
-                                previous_y = all_pieces[piece][1][1]
                     print(selected_piece)
 
             # Fallow the user mouse drag
@@ -234,8 +265,6 @@ def main():
                 # TODO: to broad except catch
                 except Exception as e:
                     print(e)
-                previous_y = 0
-                previous_x = 0
                 selected_piece = None
 
         # reset board
