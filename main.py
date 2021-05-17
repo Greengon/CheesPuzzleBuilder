@@ -5,7 +5,9 @@ from Board.ChessBoard import ChessBoard
 
 
 # Constants
-CONSTANT_PIXEL_SIZE = 75
+from GUI.Toolbar import Toolbar
+
+CONSTANT_PIXEL_SIZE = 70    # Normally 75
 BLACK = (20, 90, 19)
 WHITE = (250, 250, 200)
 
@@ -19,7 +21,7 @@ def square_printing_function(x, y, color, game_display, all_tiles):
     :param w: Width
     :param h: High
     :param color: Color
-    :param game_display: The current Pygame display
+    :param game_display: The current GUI display
     :param all_tiles: All squares of the board
     :return: None
     """
@@ -38,8 +40,8 @@ def draw_chess_pieces(game_display, chess_board, all_pieces, all_tiles):
     """
 
     # Counters variables
-    x_position = 0
-    y_position = 0
+    x_position = CONSTANT_PIXEL_SIZE
+    y_position = CONSTANT_PIXEL_SIZE
     color = 0
     number = 0
 
@@ -58,7 +60,7 @@ def draw_chess_pieces(game_display, chess_board, all_pieces, all_tiles):
             color += 1
             number += 1
         color += 1
-        x_position = 0
+        x_position = CONSTANT_PIXEL_SIZE
         y_position += CONSTANT_PIXEL_SIZE
 
 
@@ -69,25 +71,25 @@ def create_squares_parameters():
     of that item on the board in the GUI showed for the user.
     """
     all_squares_ranges = []
-    x_min = 0
-    x_max = CONSTANT_PIXEL_SIZE
-    y_min = 0
-    y_max = CONSTANT_PIXEL_SIZE
+    x_min = CONSTANT_PIXEL_SIZE
+    x_max = CONSTANT_PIXEL_SIZE * 2
+    y_min = CONSTANT_PIXEL_SIZE
+    y_max = CONSTANT_PIXEL_SIZE * 2
     for _ in range(8):
         for _ in range(8):
             all_squares_ranges.append([x_min, x_max, y_min, y_max])
             x_min += CONSTANT_PIXEL_SIZE
             x_max += CONSTANT_PIXEL_SIZE
-        x_min = 0
-        x_max = CONSTANT_PIXEL_SIZE
+        x_min = CONSTANT_PIXEL_SIZE
+        x_max = CONSTANT_PIXEL_SIZE * 2
         y_min += CONSTANT_PIXEL_SIZE
         y_max += CONSTANT_PIXEL_SIZE
     return all_squares_ranges
 
 
 def print_pieces_images(chess_board):
-    x_position = 0
-    y_position = 0
+    x_position = CONSTANT_PIXEL_SIZE
+    y_position = CONSTANT_PIXEL_SIZE
     number = 0
     new_pieces = []
     for x in range(8):
@@ -101,7 +103,7 @@ def print_pieces_images(chess_board):
                 new_pieces.append([img, [x_position, y_position], chess_board.game_tiles[number]])
             x_position += CONSTANT_PIXEL_SIZE
             number += 1
-        x_position = 0
+        x_position = CONSTANT_PIXEL_SIZE
         y_position += CONSTANT_PIXEL_SIZE
     return new_pieces
 
@@ -109,7 +111,7 @@ def print_pieces_images(chess_board):
 def game_menu(game_display, chess_board):
     """
     Show the user a menu.
-    :param game_display: Pygame.display object of our game.
+    :param game_display: GUI.display object of our game.
     :param chess_board: Our board as an object.
     :return: None
     """
@@ -163,7 +165,7 @@ def game_menu(game_display, chess_board):
 
 def pygame_init_function():
     """
-    Initialize all Pygame modules
+    Initialize all GUI modules
     :return: pygame display object and pygame.time Clock object.
     """
 
@@ -180,21 +182,40 @@ def pygame_init_function():
         .set_mode() -> Initialize a window or screen for display
         .set_caption() -> Set the current window caption
     """
-    game_display = pygame.display.set_mode((CONSTANT_PIXEL_SIZE*8, CONSTANT_PIXEL_SIZE*8))
+    game_display = pygame.display.set_mode((CONSTANT_PIXEL_SIZE*9, CONSTANT_PIXEL_SIZE*9))
     pygame.display.set_caption("ChessPuzzleBuilder")
 
     """
-    pygame.time -> Pygame module for monitoring time
+    pygame.time -> GUI module for monitoring time
         .Clock() -> Create an object to help track time.
     """
     clock = pygame.time.Clock()
     return game_display, clock
 
 
+def notation_drawing(game_display):
+    """
+    Drawing the chess notation on the display
+    :param game_display: Game display
+    :return: None
+    """
+    font = pygame.font.SysFont("Arial", 30)
+    left_notation_y = 85
+    for i in range(0, 8):
+        notation = font.render(str(8-i), 1, pygame.Color("White"))
+        game_display.blit(notation, (40, left_notation_y))
+        left_notation_y += 70
+    upside_notation_x = CONSTANT_PIXEL_SIZE + 20
+    for i in range(65, 73):
+        notation = font.render(chr(i), 1, pygame.Color("White"))
+        game_display.blit(notation, (upside_notation_x, 35))
+        upside_notation_x += 70
+
+
 # ############## Game Functions ################
 # ChessPuzzleBuilder main
 def main():
-    # init Pygame
+    # init GUI
     game_display, clock = pygame_init_function()
 
     # Create new game board object and test print it
@@ -216,7 +237,10 @@ def main():
     # Board drawing function
     draw_chess_pieces(game_display, chess_board, all_pieces, all_tiles)
 
-    # Pygame game loop until user quit's the game
+    # Create toolbar
+    toolbar = Toolbar(CONSTANT_PIXEL_SIZE*9, CONSTANT_PIXEL_SIZE/2, (128, 128, 128))
+
+    # GUI game loop until user quits the game
     while not quit_game:
         click = pygame.mouse.get_pressed()
 
@@ -234,18 +258,20 @@ def main():
                     new_pieces = print_pieces_images(chess_board)
                     all_pieces = new_pieces
                 if selected_piece is None:
-                    mx, my = pygame.mouse.get_pos()
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
                     for piece in range(len(all_pieces)):
-                        if all_pieces[piece][1][0] < mx < all_pieces[piece][1][0] + CONSTANT_PIXEL_SIZE:
-                            if all_pieces[piece][1][1] < my < all_pieces[piece][1][1] + CONSTANT_PIXEL_SIZE:
+                        if all_pieces[piece][1][0] < mouse_x < all_pieces[piece][1][0] + CONSTANT_PIXEL_SIZE:
+                            if all_pieces[piece][1][1] < mouse_y < all_pieces[piece][1][1] + CONSTANT_PIXEL_SIZE:
                                 selected_piece = piece
+                    if 0 < mouse_x < CONSTANT_PIXEL_SIZE * 9 and 0 < mouse_y < CONSTANT_PIXEL_SIZE / 2:
+                        toolbar.click((mouse_x, mouse_y), chess_board,game_display)
                     print(selected_piece)
 
             # Fallow the user mouse drag
             if event.type == pygame.MOUSEMOTION and selected_piece is not None:
-                mx, my = pygame.mouse.get_pos()
-                all_pieces[selected_piece][1][0] = mx - CONSTANT_PIXEL_SIZE/2
-                all_pieces[selected_piece][1][1] = my - CONSTANT_PIXEL_SIZE/2
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                all_pieces[selected_piece][1][0] = mouse_x - CONSTANT_PIXEL_SIZE/2
+                all_pieces[selected_piece][1][1] = mouse_y - CONSTANT_PIXEL_SIZE/2
 
             # TODO: create drag and drop GUI
             # Check's if the user released the mouse
@@ -253,15 +279,17 @@ def main():
                 try:
                     print("Mouse button up")
                     print("Selected piece: " + str(selected_piece))
-                    theMove = 0
+                    the_move = 0
                     for mov_destination in range(64):
-                        if all_squares_parameters[mov_destination][0] < all_pieces[selected_piece][1][0]+CONSTANT_PIXEL_SIZE/2 < all_squares_parameters[mov_destination][1]:
-                            if all_squares_parameters[mov_destination][2] < all_pieces[selected_piece][1][1] + CONSTANT_PIXEL_SIZE/2 < all_squares_parameters[mov_destination][3]:
-                                theMove = mov_destination
-                    all_pieces[selected_piece][1][0] = all_squares_parameters[theMove][0]
-                    all_pieces[selected_piece][1][1] = all_squares_parameters[theMove][2]
+                        if all_squares_parameters[mov_destination][0] < all_pieces[selected_piece][1][0] + \
+                                CONSTANT_PIXEL_SIZE / 2 < all_squares_parameters[mov_destination][1]:
+                            if all_squares_parameters[mov_destination][2] < all_pieces[selected_piece][1][1] + \
+                                    CONSTANT_PIXEL_SIZE / 2 < all_squares_parameters[mov_destination][3]:
+                                the_move = mov_destination
+                    all_pieces[selected_piece][1][0] = all_squares_parameters[the_move][0]
+                    all_pieces[selected_piece][1][1] = all_squares_parameters[the_move][2]
 
-                    chess_board.move(all_pieces[selected_piece][2], theMove)
+                    chess_board.move(all_pieces[selected_piece][2], the_move)
                     all_pieces = print_pieces_images(chess_board)
                     chess_board.test_print_board()  # Test function TODO: delete me in the end
 
@@ -271,7 +299,9 @@ def main():
                 selected_piece = None
 
         # reset board
-        game_display.fill((255, 255, 255))
+        game_display.fill((127, 78, 40))
+        toolbar.draw(game_display)
+        notation_drawing(game_display)
 
         # redraw tiles
         for info in all_tiles:
@@ -283,7 +313,7 @@ def main():
 
         pygame.display.update()
         clock.tick(60)
-    # Pygame loop until user quit's the game
+    # GUI loop until user quit's the game
 
 
 # The main app function
