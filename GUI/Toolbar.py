@@ -28,11 +28,13 @@ class Toolbar:
         self.left_button.draw(screen)
         self.right_button.draw(screen)
 
-    def click(self, position, chess_board, game_display):
+    def click(self, position, chess_board):
         print("Toolbar clicked")
         if self.left_button.get_rect().collidepoint(position):
-            self.left_button.click()
+            # Restart button
+            chess_board.set_game_tiles(chess_board.get_original_tiles())
         elif self.right_button.get_rect().collidepoint(position):
+            # Load button
             Tk().withdraw()
             filename = askopenfilename()
             chess_board.load_board_from_file_path(filename)

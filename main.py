@@ -264,7 +264,8 @@ def main():
                             if all_pieces[piece][1][1] < mouse_y < all_pieces[piece][1][1] + CONSTANT_PIXEL_SIZE:
                                 selected_piece = piece
                     if 0 < mouse_x < CONSTANT_PIXEL_SIZE * 9 and 0 < mouse_y < CONSTANT_PIXEL_SIZE / 2:
-                        toolbar.click((mouse_x, mouse_y), chess_board,game_display)
+                        toolbar.click((mouse_x, mouse_y), chess_board)
+                        all_pieces = print_pieces_images(chess_board)
                     print(selected_piece)
 
             # Fallow the user mouse drag

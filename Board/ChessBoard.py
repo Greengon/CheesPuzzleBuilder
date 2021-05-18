@@ -15,6 +15,7 @@ class ChessBoard:
     """
 
     game_tiles = []
+    original_game_tiles = []
 
     """
     All classes have function called __init__(), which is always 
@@ -47,6 +48,7 @@ class ChessBoard:
         self.game_tiles.insert(61, Bishop("White", 61))
         self.game_tiles.insert(62, Knight("White", 62))
         self.game_tiles.insert(63, Rook("White", 63))
+        self.original_game_tiles = self.game_tiles.copy()
 
     # Testing function only
     def test_print_board(self):
@@ -108,7 +110,14 @@ class ChessBoard:
                         if char == 'p':
                             self.game_tiles[count] = Pawn("White", count)
                             count += 1
+        self.original_game_tiles = self.game_tiles.copy()
         print("Done copying from file")
+
+    def get_original_tiles(self):
+        return self.original_game_tiles
+
+    def set_game_tiles(self, tiles_to_copy):
+        self.game_tiles = tiles_to_copy.copy()
 
     """
     Make a move on the board.
