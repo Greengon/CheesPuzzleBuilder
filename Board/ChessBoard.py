@@ -117,7 +117,49 @@ class ChessBoard:
         return self.original_game_tiles
 
     def set_game_tiles(self, tiles_to_copy):
-        self.game_tiles = tiles_to_copy.copy()
+        count = 0
+        for piece in tiles_to_copy:
+            if piece.to_string() != '|' and piece.to_string() != '\n':
+                if piece.to_string() == '-':
+                    self.game_tiles[count] = NoPiece(count)
+                    count += 1
+                if piece.to_string() == 'R':
+                    self.game_tiles[count] = Rook("Black", count)
+                    count += 1
+                if piece.to_string() == 'N':
+                    self.game_tiles[count] = Knight("Black", count)
+                    count += 1
+                if piece.to_string() == 'B':
+                    self.game_tiles[count] = Bishop("Black", count)
+                    count += 1
+                if piece.to_string() == 'Q':
+                    self.game_tiles[count] = Queen("Black", count)
+                    count += 1
+                if piece.to_string() == 'K':
+                    self.game_tiles[count] = King("Black", count)
+                    count += 1
+                if piece.to_string() == 'P':
+                    self.game_tiles[count] = Pawn("Black", count)
+                    count += 1
+                if piece.to_string() == 'r':
+                    self.game_tiles[count] = Rook("White", count)
+                    count += 1
+                if piece.to_string() == 'n':
+                    self.game_tiles[count] = Knight("White", count)
+                    count += 1
+                if piece.to_string() == 'b':
+                    self.game_tiles[count] = Bishop("White", count)
+                    count += 1
+                if piece.to_string() == 'q':
+                    self.game_tiles[count] = Queen("White", count)
+                    count += 1
+                if piece.to_string() == 'k':
+                    self.game_tiles[count] = King("White", count)
+                    count += 1
+                if piece.to_string() == 'p':
+                    self.game_tiles[count] = Pawn("White", count)
+                    count += 1
+        print("Done restarting.")
 
     """
     Make a move on the board.
